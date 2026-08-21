@@ -1,0 +1,988 @@
+/* ==========================================================================
+   Ontopic design tokens
+   Every colour in the app comes from this block. Dark mode is a full swap of
+   the same names, so there is no half-themed surface anywhere.
+   ========================================================================== */
+
+:root {
+  --bg: #fcfcfd;
+  --surface: #ffffff;
+  --sunk: #f3f4f7;
+  --line: #e2e5ea;
+  --line-strong: #cfd4dc;
+  --control: #7f8a99;
+  --text: #16181d;
+  --text-2: #555c66;
+  --text-3: #666e79;
+  --accent: #0c6a60;
+  --accent-hover: #095a52;
+  --accent-wash: #e6f2f0;
+  --on-accent: #ffffff;
+  --focus: #0c6a60;
+  --danger: #a1332f;
+  --danger-wash: #fbeceb;
+  --shadow-sm: 0 1px 2px rgba(22, 24, 29, 0.05);
+  --shadow-md: 0 1px 2px rgba(22, 24, 29, 0.04), 0 8px 20px -8px rgba(22, 24, 29, 0.12);
+  --radius: 10px;
+  --radius-sm: 7px;
+  --header-h: 60px;
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --bg: #0f1114;
+  --surface: #171a1f;
+  --sunk: #13161a;
+  --line: #262b32;
+  --line-strong: #38404a;
+  --control: #5b6572;
+  --text: #e9ecf0;
+  --text-2: #a7aeb8;
+  --text-3: #949ca6;
+  --accent: #4cc0b1;
+  --accent-hover: #63cdc0;
+  --accent-wash: #14282a;
+  --on-accent: #06201e;
+  --focus: #4cc0b1;
+  --danger: #f08a84;
+  --danger-wash: #2a1817;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 20px -8px rgba(0, 0, 0, 0.5);
+  color-scheme: dark;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Instrument Sans", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+}
+
+p {
+  margin: 0;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.mono {
+  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 60;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.9rem;
+  box-shadow: var(--shadow-md);
+}
+
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+}
+
+.shell {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 4vw, 2rem);
+}
+
+/* ==========================================================================
+   Header
+   ========================================================================== */
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+
+.header-in {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  height: var(--header-h);
+}
+
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 1.0625rem;
+  letter-spacing: -0.02em;
+  flex: none;
+}
+
+.wordmark-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  background: var(--accent);
+  flex: none;
+}
+
+.header-spacer {
+  margin-left: auto;
+}
+
+.icon-button {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--control);
+  border-radius: var(--radius-sm);
+  color: var(--text-2);
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.icon-button:hover {
+  color: var(--text);
+  border-color: var(--line-strong);
+}
+
+.icon-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ==========================================================================
+   Search
+   ========================================================================== */
+
+.intro {
+  padding-top: clamp(2.5rem, 7vw, 4.5rem);
+  padding-bottom: 0.5rem;
+  max-width: 34rem;
+}
+
+.intro h1 {
+  font-size: clamp(1.75rem, 4.5vw, 2.375rem);
+}
+
+.intro p {
+  margin-top: 0.75rem;
+  color: var(--text-2);
+}
+
+.search {
+  margin-top: clamp(1.5rem, 4vw, 2rem);
+}
+
+.search-row {
+  display: flex;
+  gap: 0.5rem;
+  max-width: 40rem;
+}
+
+.search-field {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.search-input {
+  width: 100%;
+  height: 46px;
+  padding: 0 0.9rem 0 2.5rem;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--control);
+  border-radius: var(--radius);
+  font: inherit;
+  box-shadow: var(--shadow-sm);
+}
+
+.search-input::placeholder {
+  color: var(--text-3);
+}
+
+.search-input:focus {
+  outline: 2px solid var(--focus);
+  outline-offset: -1px;
+  border-color: var(--focus);
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: var(--text-3);
+  pointer-events: none;
+}
+
+/* No keyboard means no shortcut worth advertising, and at narrow widths the
+   badge crowds the typed text. */
+.search-hint {
+  display: none;
+  position: absolute;
+  right: 0.7rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-3);
+  font-size: 0.6875rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 0.05rem 0.3rem;
+  pointer-events: none;
+}
+
+@media (min-width: 700px) {
+  .search-hint {
+    display: block;
+  }
+
+  .search-input {
+    padding-right: 2.4rem;
+  }
+}
+
+.button {
+  flex: none;
+  height: 46px;
+  padding: 0 1.15rem;
+  background: var(--accent);
+  color: var(--on-accent);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.button:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.button-quiet {
+  background: transparent;
+  color: var(--text-2);
+  border-color: var(--control);
+}
+
+.button-quiet:hover {
+  background: var(--sunk);
+  color: var(--text);
+  border-color: var(--line-strong);
+}
+
+/* ==========================================================================
+   Recent topics
+   ========================================================================== */
+
+.recent {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.5rem;
+  max-width: 44rem;
+}
+
+.recent-label {
+  font-size: 0.75rem;
+  color: var(--text-3);
+  margin-right: 0.15rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  height: 27px;
+  padding: 0 0.55rem;
+  background: transparent;
+  border: 1px solid var(--control);
+  border-radius: 999px;
+  color: var(--text-2);
+  font-size: 0.8125rem;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.chip:hover {
+  color: var(--text);
+  border-color: var(--line-strong);
+}
+
+.chip-clear {
+  border-style: dashed;
+  color: var(--text-3);
+}
+
+/* ==========================================================================
+   Filters
+   ========================================================================== */
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem 1.25rem;
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--line);
+  margin-top: clamp(1.75rem, 4vw, 2.5rem);
+}
+
+.filter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.filter-label {
+  font-size: 0.6875rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.segmented {
+  display: flex;
+  background: var(--sunk);
+  border: 1px solid var(--control);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+  gap: 2px;
+}
+
+.segmented button {
+  padding: 0.28rem 0.6rem;
+  background: transparent;
+  border: 0;
+  border-radius: 5px;
+  color: var(--text-2);
+  font-size: 0.8125rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.segmented button:hover {
+  color: var(--text);
+}
+
+.segmented button[aria-pressed="true"] {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+  font-weight: 500;
+}
+
+.filters-meta {
+  margin-left: auto;
+  align-self: center;
+  font-size: 0.8125rem;
+  color: var(--text-3);
+}
+
+/* ==========================================================================
+   Notices
+   ========================================================================== */
+
+.notice {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  margin-top: 1.25rem;
+  padding: 0.7rem 0.9rem;
+  background: var(--accent-wash);
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  color: var(--text);
+}
+
+.notice svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 0.15rem;
+  color: var(--accent);
+}
+
+.notice-danger {
+  background: var(--danger-wash);
+  border-color: color-mix(in srgb, var(--danger) 28%, transparent);
+}
+
+.notice-danger svg {
+  color: var(--danger);
+}
+
+/* ==========================================================================
+   Results grid and cards
+   ========================================================================== */
+
+.grid {
+  display: grid;
+  gap: 1.5rem 1.25rem;
+  padding: 1.75rem 0 4rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 560px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1160px) {
+  .grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius);
+}
+
+.card-thumb {
+  position: relative;
+  display: block;
+  background: var(--sunk);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+}
+
+.card-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-duration {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  padding: 0.05rem 0.3rem;
+  background: rgba(10, 12, 15, 0.82);
+  color: #f4f6f8;
+  border-radius: 4px;
+  font-size: 0.6875rem;
+  letter-spacing: 0.01em;
+}
+
+.card-body {
+  padding-top: 0.7rem;
+}
+
+.card-title {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-link:hover .card-title {
+  color: var(--accent);
+}
+
+.card-meta {
+  margin-top: 0.3rem;
+  font-size: 0.8125rem;
+  color: var(--text-2);
+}
+
+.card-meta-row {
+  margin-top: 0.15rem;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.75rem;
+  color: var(--text-3);
+}
+
+.level-tag {
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 0 0.28rem;
+  font-size: 0.6875rem;
+  color: var(--text-3);
+  cursor: help;
+}
+
+/* ==========================================================================
+   Skeletons, empty and error states
+   ========================================================================== */
+
+.skeleton-thumb {
+  aspect-ratio: 16 / 9;
+  background: var(--sunk);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.skeleton-line {
+  height: 11px;
+  background: var(--sunk);
+  border-radius: 3px;
+  margin-top: 0.6rem;
+}
+
+.state {
+  padding: clamp(3rem, 9vw, 5.5rem) 0;
+  max-width: 34rem;
+}
+
+.state h2 {
+  font-size: 1.25rem;
+}
+
+.state p {
+  margin-top: 0.6rem;
+  color: var(--text-2);
+}
+
+.state ul {
+  margin-top: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  color: var(--text-2);
+  font-size: 0.9375rem;
+}
+
+.state li::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--line-strong);
+  vertical-align: 0.25em;
+  margin-right: 0.6rem;
+}
+
+.state-actions {
+  margin-top: 1.25rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* ==========================================================================
+   Watch page
+   ========================================================================== */
+
+.watch {
+  padding: 1.5rem 0 4rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.watch-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.875rem;
+  color: var(--text-2);
+}
+
+.watch-back:hover {
+  color: var(--text);
+}
+
+.watch-back svg {
+  width: 14px;
+  height: 14px;
+}
+
+.player {
+  margin-top: 1rem;
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: #0a0c0f;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.player iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.player-demo {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  gap: 0.5rem;
+  padding: 2rem;
+  text-align: center;
+  color: #c9ced6;
+}
+
+.watch-head {
+  margin-top: 1.25rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.watch-title {
+  font-size: clamp(1.125rem, 2.6vw, 1.4375rem);
+  flex: 1 1 auto;
+}
+
+.watch-meta {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.875rem;
+  color: var(--text-2);
+}
+
+.watch-note {
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+  font-size: 0.8125rem;
+  color: var(--text-3);
+  max-width: 46rem;
+}
+
+.watch-note a {
+  color: var(--text-2);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Focus mode: the player, the title, and the way out. Nothing else. */
+.focus-on .header,
+.focus-on .watch-back,
+.focus-on .watch-meta,
+.focus-on .watch-note,
+.focus-on .footer {
+  display: none;
+}
+
+.focus-on .watch {
+  padding-top: 1rem;
+  max-width: 1180px;
+}
+
+.focus-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: none;
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+
+.footer {
+  border-top: 1px solid var(--line);
+  padding: 1.5rem 0 2.5rem;
+  font-size: 0.8125rem;
+  color: var(--text-3);
+}
+
+.footer p + p {
+  margin-top: 0.4rem;
+}
+
+/* ==========================================================================
+   Landing hero
+   The head block is shared by both views. On the landing page it centres and
+   grows; as soon as there is a topic it drops back to the compact left
+   aligned header so results are not pushed down the page.
+   ========================================================================== */
+
+.head {
+  position: relative;
+}
+
+.head-hero {
+  text-align: center;
+  padding-bottom: 0.5rem;
+}
+
+/* A very soft accent wash behind the hero. Sits under the content and is
+   invisible to assistive tech. */
+.head-hero::before {
+  content: "";
+  position: absolute;
+  inset: -2rem 0 auto;
+  height: 22rem;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    60% 100% at 50% 0%,
+    var(--accent-wash) 0%,
+    transparent 70%
+  );
+}
+
+.head-hero .intro {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding-top: clamp(2.75rem, 8vw, 5rem);
+}
+
+.head-hero .intro h1 {
+  font-size: clamp(2rem, 6vw, 3.25rem);
+  letter-spacing: -0.03em;
+}
+
+.head-hero .intro p {
+  margin-top: 0.9rem;
+  font-size: clamp(0.9375rem, 1.6vw, 1.0625rem);
+  max-width: 32rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.head-hero .search-row {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* The field itself must stay left aligned inside a centred hero. */
+.head-hero .search-input {
+  text-align: left;
+}
+
+.head-hero .recent,
+.head-hero .suggest {
+  justify-content: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  height: 26px;
+  padding: 0 0.7rem 0 0.55rem;
+  margin-bottom: 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  color: var(--text-2);
+  font-size: 0.75rem;
+  letter-spacing: 0.01em;
+}
+
+.eyebrow-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* ==========================================================================
+   Suggested topics
+   ========================================================================== */
+
+.suggest {
+  margin-top: 1.1rem;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.5rem;
+  max-width: 44rem;
+}
+
+.suggest-label {
+  font-size: 0.75rem;
+  color: var(--text-3);
+  margin-right: 0.15rem;
+}
+
+/* ==========================================================================
+   Landing pitch cards
+   ========================================================================== */
+
+.pitch {
+  padding: clamp(2.5rem, 7vw, 4rem) 0 clamp(2rem, 5vw, 3rem);
+}
+
+.pitch-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 700px) {
+  .pitch-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+}
+
+.pitch-card {
+  padding: 1.25rem 1.25rem 1.35rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 140ms ease, border-color 140ms ease;
+}
+
+.pitch-card:hover {
+  border-color: var(--line-strong);
+  box-shadow: var(--shadow-md);
+}
+
+.pitch-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  margin-bottom: 0.85rem;
+  border-radius: var(--radius-sm);
+  background: var(--accent-wash);
+  color: var(--accent);
+}
+
+.pitch-icon svg {
+  width: 19px;
+  height: 19px;
+}
+
+.pitch-card h2 {
+  font-size: 0.9375rem;
+}
+
+.pitch-card p {
+  margin-top: 0.4rem;
+  color: var(--text-2);
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.pitch-foot {
+  margin-top: clamp(1.5rem, 4vw, 2rem);
+  text-align: center;
+  color: var(--text-3);
+  font-size: 0.8125rem;
+}
+
+.kbd {
+  display: inline-block;
+  min-width: 20px;
+  padding: 0.1rem 0.35rem;
+  /* --control, not --line-strong: this reads as a key cap only if the edge is
+     actually visible, and --control is the token that clears 3:1 on --sunk. */
+  border: 1px solid var(--control);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: var(--sunk);
+  color: var(--text-2);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  text-align: center;
+}
+
+/* ==========================================================================
+   Motion: there is very little, and it is all optional.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
