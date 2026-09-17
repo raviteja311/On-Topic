@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import { Suspense } from "react";
 import Filters from "@/components/Filters";
 import RecentTopics from "@/components/RecentTopics";
@@ -11,7 +12,8 @@ import {
   SuggestedTopics,
 } from "@/components/States";
 import VideoGrid from "@/components/VideoGrid";
-import { budgetStatus } from "@/lib/budget";
+import { budgetStatus, type BudgetStatus } from "@/lib/budget";
+import { visitorKey, visitorStatus, type VisitorStatus } from "@/lib/rate-limit";
 import { searchVideos } from "@/lib/youtube";
 import type { LengthKey, LevelKey, Query, SortKey } from "@/lib/types";
 
@@ -105,11 +107,32 @@ export default async function Home({
 
 /** How few searches must remain before the page says so unprompted. */
 const LOW_BUDGET = 10;
+const LOW_SHARE = 3;
+
+/**
+ * Returns the warning to show, or null when neither cap is close. The visitor's
+ * own share wins a tie, because it is the one they can see coming and the one
+ * that will actually stop them.
+ */
+function runningLow(
+  budget: BudgetStatus,
+  share: VisitorStatus | null,
+): string | null {
+  if (share && share.remaining > 0 && share.remaining <= LOW_SHARE) {
+    return `${share.remaining} of your ${share.limit} searches left today.`;
+  }
+  if (budget.remaining > 0 && budget.remaining <= LOW_BUDGET) {
+    return `${budget.remaining} of ${budget.limit} searches left today.`;
+  }
+  return null;
+}
 
 async function Results({ query }: { query: Query }) {
-  const result = await searchVideos(query);
-  // Read after the search, so the count already includes the one just run.
+  const visitor = visitorKey(await headers());
+  const result = await searchVideos(query, visitor);
+  // Read after the search, so the counts already include the one just run.
   const budget = budgetStatus();
+  const share = visitor ? visitorStatus(visitor) : null;
 
   if (!result.ok) {
     return (
@@ -127,6 +150,10 @@ async function Results({ query }: { query: Query }) {
       ? result.videos
       : result.videos.filter((v) => v.level === query.level);
 
+  // Whichever cap will stop this visitor first is the one worth telling them
+  // about, and their own share is the only one they can do anything about.
+  const lowNotice = result.demo ? null : runningLow(budget, share);
+
   return (
     <>
       <Filters query={query} count={videos.length} />
@@ -138,11 +165,7 @@ async function Results({ query }: { query: Query }) {
         </Notice>
       ) : null}
 
-      {!result.demo && budget.remaining > 0 && budget.remaining <= LOW_BUDGET ? (
-        <Notice tone="danger">
-          {budget.remaining} of {budget.limit} searches left today.
-        </Notice>
-      ) : null}
+      {lowNotice ? <Notice tone="danger">{lowNotice}</Notice> : null}
 
       {videos.length ? (
         <VideoGrid videos={videos} backTo={toHref(query)} />
