@@ -92,15 +92,23 @@ export function inferLevel(
   record("advanced", hits(d, ADVANCED), 1);
   record("intermediate", hits(d, INTERMEDIATE), 1);
 
-  const best = (Object.keys(scores) as Level[]).reduce((a, b) =>
-    scores[b] > scores[a] ? b : a,
-  );
+  const levels = Object.keys(scores) as Level[];
+  const top = Math.max(...levels.map((level) => scores[level]));
 
-  // Nothing matched, or a tie. Intermediate is the honest default: it claims
-  // the least about a video whose creator gave us no signal either way.
-  if (scores[best] === 0) return { level: "intermediate", signals: [] };
+  // Nothing matched. Intermediate is the honest default: it claims the least
+  // about a video whose creator gave us no signal either way.
+  if (top === 0) return { level: "intermediate", signals: [] };
 
-  return { level: best, signals: signals.slice(0, 4) };
+  // Two levels scored the same, so the words we found disagree with each other.
+  // Falling back for the same reason, rather than letting the order of the keys
+  // above pick a winner. The signals still go out, because they are what we
+  // actually found, and a reader can see the disagreement for themselves.
+  const winners = levels.filter((level) => scores[level] === top);
+  if (winners.length > 1) {
+    return { level: "intermediate", signals: signals.slice(0, 4) };
+  }
+
+  return { level: winners[0], signals: signals.slice(0, 4) };
 }
 
 export const LEVEL_LABEL: Record<Level, string> = {

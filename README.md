@@ -39,6 +39,7 @@ so a referrer-restricted key is rejected.
 | `YOUTUBE_RELEVANCE_LANGUAGE` | Optional. Biases results toward one language, e.g. `en`. |
 | `SEARCH_DAILY_LIMIT` | Optional. Daily search cap for the whole deployment, default `60`. |
 | `SEARCH_VISITOR_LIMIT` | Optional. Daily cap per visitor, default `15`. |
+| `NEXT_PUBLIC_SITE_URL` | Optional. Absolute site URL for link previews. Vercel supplies its own, so this is only needed elsewhere. |
 
 ## Scripts
 
@@ -85,7 +86,9 @@ export will not work.
   front of the app, as in local development, there is no address to act on and
   only the deployment cap applies.
 - **Level is inferred** from keywords in the title, not an API field, so it is
-  a guess and labelled as one.
+  a guess and labelled as one. When the words found point two ways at once it
+  falls back to intermediate rather than picking a side, and the card's tooltip
+  lists whichever words it matched.
 - **24 results per search**, no pagination.
 - **Search history stays in the browser** via `localStorage` and is never sent
   anywhere.

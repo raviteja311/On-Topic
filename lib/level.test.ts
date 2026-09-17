@@ -85,15 +85,28 @@ describe("inferLevel, signals", () => {
 });
 
 describe("inferLevel, tie breaking", () => {
-  /**
-   * Documents current behaviour, which does not match the comment above the
-   * fallback in level.ts. That comment reads "Nothing matched, or a tie.
-   * Intermediate is the honest default", but the guard only catches a zero
-   * score, so a genuine tie resolves by key order instead and beginner wins.
-   * "intro to" scores beginner 3 and "internals" scores advanced 3.
-   */
-  test("a genuine tie resolves to beginner, not intermediate", () => {
-    assert.equal(inferLevel("Intro to internals", "").level, "beginner");
+  // "intro to" scores beginner 3 and "internals" scores advanced 3, so the
+  // words found disagree and neither should win on key order alone.
+  test("a tie falls back to intermediate", () => {
+    assert.equal(inferLevel("Intro to internals", "").level, "intermediate");
+  });
+
+  test("a tie still reports the words that disagreed", () => {
+    const { signals } = inferLevel("Intro to internals", "");
+    assert.deepEqual(signals, ["intro to", "internals"]);
+  });
+
+  test("a clear winner is unaffected", () => {
+    assert.equal(inferLevel("Advanced internals deep dive", "").level, "advanced");
+    assert.equal(inferLevel("Beginner basics, getting started", "").level, "beginner");
+  });
+
+  // Intermediate winning outright is not the same as the fallback, and the
+  // signals are what tell the two apart.
+  test("intermediate winning outright still reports its signals", () => {
+    const { level, signals } = inferLevel("Build a real world project", "");
+    assert.equal(level, "intermediate");
+    assert.ok(signals.length > 0);
   });
 });
 

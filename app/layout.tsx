@@ -3,15 +3,43 @@ import Link from "next/link";
 import ThemeToggle from "@/components/ThemeToggle";
 import "./globals.css";
 
+const DESCRIPTION =
+  "Enter a topic and get only videos on that topic. No feed, no recommendations, no comments.";
+
+/**
+ * Needed to turn the relative opengraph-image path into the absolute URL a
+ * scraper requires. Vercel supplies its own host, so the variable only has to
+ * be set when deploying somewhere else.
+ */
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "http://localhost:3000");
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
     default: "Ontopic, focused video search",
     template: "%s · Ontopic",
   },
-  description:
-    "Enter a topic and get only videos on that topic. No feed, no recommendations, no comments.",
+  description: DESCRIPTION,
   applicationName: "Ontopic",
   robots: { index: true, follow: true },
+  // Every search is a shareable link, so the preview those links produce is
+  // part of the product rather than an afterthought.
+  openGraph: {
+    type: "website",
+    siteName: "Ontopic",
+    title: "Ontopic, focused video search",
+    description: DESCRIPTION,
+    url: "/",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Ontopic, focused video search",
+    description: DESCRIPTION,
+  },
 };
 
 export const viewport: Viewport = {
