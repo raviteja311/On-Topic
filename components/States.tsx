@@ -171,6 +171,47 @@ export function EmptyState({ query }: { query: Query }) {
   );
 }
 
+/** Shared by the search and watch pages, so one failure reads the same in both. */
+const ADVICE: Record<SearchFailure["kind"], string[]> = {
+  // Deliberately empty. The message says the whole thing in one line, and a
+  // list of caveats under it would only bury it.
+  limit: [],
+  quota: [
+    "The quota resets at midnight Pacific time",
+    "A repeated search is served from cache for ten minutes and costs nothing",
+    "Raising the quota is a request in the Google Cloud console",
+  ],
+  key: [
+    "Check YOUTUBE_API_KEY in the environment",
+    "Confirm YouTube Data API v3 is enabled for that Cloud project",
+    "If the key is restricted by referrer, it will reject server side calls",
+  ],
+  network: [
+    "This is usually temporary, so trying again often works",
+    "Check outbound network access if this is a fresh deployment",
+  ],
+  unknown: ["Trying the search again is the first thing to do"],
+};
+
+/**
+ * Retrying a spent budget or quota just reproduces the same refusal, so a retry
+ * is only offered where trying again could actually change the outcome.
+ */
+function isRetryable(kind: SearchFailure["kind"]): boolean {
+  return kind !== "limit" && kind !== "quota";
+}
+
+function Advice({ kind }: { kind: SearchFailure["kind"] }) {
+  if (!ADVICE[kind].length) return null;
+  return (
+    <ul>
+      {ADVICE[kind].map((line) => (
+        <li key={line}>{line}</li>
+      ))}
+    </ul>
+  );
+}
+
 export function ErrorState({
   error,
   query,
@@ -178,43 +219,12 @@ export function ErrorState({
   error: SearchFailure;
   query: Query;
 }) {
-  const advice: Record<SearchFailure["kind"], string[]> = {
-    // Deliberately empty. The message says the whole thing in one line, and a
-    // list of caveats under it would only bury it.
-    limit: [],
-    quota: [
-      "The quota resets at midnight Pacific time",
-      "A repeated search is served from cache for ten minutes and costs nothing",
-      "Raising the quota is a request in the Google Cloud console",
-    ],
-    key: [
-      "Check YOUTUBE_API_KEY in the environment",
-      "Confirm YouTube Data API v3 is enabled for that Cloud project",
-      "If the key is restricted by referrer, it will reject server side calls",
-    ],
-    network: [
-      "This is usually temporary, so trying again often works",
-      "Check outbound network access if this is a fresh deployment",
-    ],
-    unknown: ["Trying the search again is the first thing to do"],
-  };
-
-  // Retrying a spent budget just reproduces the same refusal, so the button
-  // only appears when trying again could actually change the outcome.
-  const retryable = error.kind !== "limit" && error.kind !== "quota";
-
   return (
     <div className="state">
       <h2>{error.kind === "limit" ? "Rate limit reached" : "Search could not run"}</h2>
       <p>{error.message}</p>
-      {advice[error.kind].length ? (
-        <ul>
-          {advice[error.kind].map((line) => (
-            <li key={line}>{line}</li>
-          ))}
-        </ul>
-      ) : null}
-      {retryable ? (
+      <Advice kind={error.kind} />
+      {isRetryable(error.kind) ? (
         <div className="state-actions">
           <Link
             className="button"
@@ -224,6 +234,45 @@ export function ErrorState({
           </Link>
         </div>
       ) : null}
+    </div>
+  );
+}
+
+/**
+ * The watch page equivalent. It exists because a failed lookup used to render
+ * as a 404 saying the video had been removed, which blamed the link for what
+ * was actually a quota, key or network problem on our side.
+ */
+export function WatchErrorState({
+  error,
+  backTo,
+  retryTo,
+}: {
+  error: SearchFailure;
+  backTo: string;
+  retryTo: string;
+}) {
+  return (
+    <div className="state">
+      <h2>This video could not be loaded</h2>
+      <p>{error.message}</p>
+      {/* Said plainly, because the obvious reading of a failure here is that
+          the video is gone, and that is the one thing we do not know. */}
+      <p>
+        This is a problem reaching YouTube, not a problem with the link. The
+        video itself may well be fine.
+      </p>
+      <Advice kind={error.kind} />
+      <div className="state-actions">
+        {isRetryable(error.kind) ? (
+          <Link className="button" href={retryTo}>
+            Try again
+          </Link>
+        ) : null}
+        <Link className="button button-quiet" href={backTo}>
+          Back to results
+        </Link>
+      </div>
     </div>
   );
 }

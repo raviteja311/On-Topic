@@ -1,3 +1,5 @@
+import { cache } from "react";
+
 import { budgetStatus, recordSearch } from "./budget";
 import { cacheGet, cacheSet } from "./cache";
 import { parseIsoDuration } from "./duration";
@@ -269,25 +271,42 @@ export interface VideoMeta {
   seconds: number;
 }
 
+/**
+ * Why this is a result rather than `VideoMeta | null`: a null collapses two
+ * very different answers into one. "The API told us this video is gone" is a
+ * fact about the video. "We could not reach the API" says nothing about the
+ * video at all, and reporting it as a missing video blames the user's link for
+ * our own outage.
+ */
+export type VideoMetaResult =
+  | { ok: true; meta: VideoMeta }
+  /** The lookup ran and came back empty, so the video really is unavailable. */
+  | { ok: false; kind: "missing" }
+  /** The lookup itself failed, so whether the video exists is still unknown. */
+  | { ok: false; kind: "failed"; error: SearchFailure };
+
 /** Used by the watch page. 1 quota unit, so it is cheap to call per view. */
-export async function getVideoMeta(id: string): Promise<VideoMeta | null> {
+async function fetchVideoMeta(id: string): Promise<VideoMetaResult> {
   const key = process.env.YOUTUBE_API_KEY;
 
   if (!key) {
     const demo = mockVideos().find((v) => v.id === id);
     return demo
       ? {
-          id: demo.id,
-          title: demo.title,
-          channel: demo.channel,
-          publishedAt: demo.publishedAt,
-          seconds: demo.seconds,
+          ok: true,
+          meta: {
+            id: demo.id,
+            title: demo.title,
+            channel: demo.channel,
+            publishedAt: demo.publishedAt,
+            seconds: demo.seconds,
+          },
         }
-      : null;
+      : { ok: false, kind: "missing" };
   }
 
   const cached = cacheGet<VideoMeta>(`meta|${id}`);
-  if (cached) return cached;
+  if (cached) return { ok: true, meta: cached };
 
   const res = await call<{
     items?: Array<{
@@ -296,9 +315,12 @@ export async function getVideoMeta(id: string): Promise<VideoMeta | null> {
     }>;
   }>("videos", { part: "snippet,contentDetails", id }, key);
 
-  if (!res.ok) return null;
+  // The distinction this whole type exists for: a transport or quota failure
+  // is not evidence that the video is gone.
+  if (!res.ok) return { ok: false, kind: "failed", error: res.error };
+
   const item = res.data.items?.[0];
-  if (!item) return null;
+  if (!item) return { ok: false, kind: "missing" };
 
   const meta: VideoMeta = {
     id,
@@ -308,8 +330,15 @@ export async function getVideoMeta(id: string): Promise<VideoMeta | null> {
     seconds: parseIsoDuration(item.contentDetails?.duration),
   };
   cacheSet(`meta|${id}`, meta, 60 * 60 * 1000);
-  return meta;
+  return { ok: true, meta };
 }
+
+/**
+ * The page and its generateMetadata both need the same lookup, so React's cache
+ * collapses them into one per request. The TTL cache above already covers a
+ * hit, but a failing lookup never populates it and would otherwise be retried.
+ */
+export const getVideoMeta = cache(fetchVideoMeta);
 
 /** The API returns titles with HTML entities already escaped, for example &amp;#39;. */
 function decodeEntities(s: string): string {
