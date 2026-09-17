@@ -37,7 +37,8 @@ so a referrer-restricted key is rejected.
 |---|---|
 | `YOUTUBE_API_KEY` | Real search. Omit for demo fixtures. |
 | `YOUTUBE_RELEVANCE_LANGUAGE` | Optional. Biases results toward one language, e.g. `en`. |
-| `SEARCH_DAILY_LIMIT` | Optional. Daily search cap, default `60`. |
+| `SEARCH_DAILY_LIMIT` | Optional. Daily search cap for the whole deployment, default `60`. |
+| `SEARCH_VISITOR_LIMIT` | Optional. Daily cap per visitor, default `15`. |
 
 ## Scripts
 
@@ -74,6 +75,15 @@ export will not work.
   60 multiplied by however many instances happen to be warm. Good enough to stop
   ordinary runaway usage, not a guarantee against a determined caller. Making it
   one shared number means moving both to a shared store such as Vercel KV.
+- **Each visitor gets 15 of those searches.** Without a per-visitor share the
+  daily cap is first come first served, so one person refreshing could spend the
+  day and everyone arriving after them would get the refusal. A visitor is
+  whoever the platform's proxy reports, so this is a fairness mechanism rather
+  than a security control: anyone able to vary that address can have another
+  share, and the deployment cap is what actually bounds the spend. Addresses are
+  hashed with a salt generated at startup and are never stored. With no proxy in
+  front of the app, as in local development, there is no address to act on and
+  only the deployment cap applies.
 - **Level is inferred** from keywords in the title, not an API field, so it is
   a guess and labelled as one.
 - **24 results per search**, no pagination.

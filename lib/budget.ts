@@ -26,7 +26,8 @@ const dayParts = new Intl.DateTimeFormat("en-US", {
   day: "2-digit",
 });
 
-function pacificDay(): string {
+/** Exported so the per-visitor limit resets on exactly the same boundary. */
+export function pacificDay(): string {
   const parts = dayParts.formatToParts(new Date());
   const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
   return `${get("year")}-${get("month")}-${get("day")}`;

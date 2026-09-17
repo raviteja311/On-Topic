@@ -5,6 +5,7 @@ import { cacheGet, cacheSet } from "./cache";
 import { parseIsoDuration } from "./duration";
 import { inferLevel } from "./level";
 import { mockVideos } from "./mock";
+import { recordVisitorSearch, visitorStatus } from "./rate-limit";
 import type {
   LengthKey,
   Query,
@@ -135,7 +136,11 @@ export function isDemoMode(): boolean {
   return !process.env.YOUTUBE_API_KEY;
 }
 
-export async function searchVideos(query: Query): Promise<SearchResult> {
+export async function searchVideos(
+  query: Query,
+  /** From visitorKey(). Null when no proxy told us who is asking. */
+  visitor?: string | null,
+): Promise<SearchResult> {
   const key = process.env.YOUTUBE_API_KEY;
 
   if (!key) {
@@ -155,6 +160,19 @@ export async function searchVideos(query: Query): Promise<SearchResult> {
   const cached = cacheGet<Video[]>(cacheKey);
   if (cached) {
     return { ok: true, videos: cached, demo: false, cached: true };
+  }
+
+  // The visitor's own share first, so one person cannot spend the whole
+  // deployment's day. Like the global cap below, this sits after the cache, so
+  // a repeat search stays free and never counts against anyone.
+  if (visitor) {
+    const share = visitorStatus(visitor);
+    if (share.exhausted) {
+      return fail(
+        "limit",
+        `You have used your ${share.limit} searches for today. This resets at midnight Pacific time.`,
+      );
+    }
   }
 
   // Checked after the cache, so a repeat search stays free and never counts
@@ -185,6 +203,7 @@ export async function searchVideos(query: Query): Promise<SearchResult> {
   const lang = process.env.YOUTUBE_RELEVANCE_LANGUAGE;
   if (lang) searchParams.relevanceLanguage = lang;
 
+  if (visitor) recordVisitorSearch(visitor);
   recordSearch();
   const search = await call<{ items?: SearchItem[] }>(
     "search",
