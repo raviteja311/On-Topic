@@ -61,7 +61,12 @@ export will not work.
   search can be bookmarked or shared.
 - **Search runs on the server.** The API key never reaches the browser.
 - **Capped at 60 searches a day**, resetting at midnight Pacific. Repeating a
-  search is served from cache for 10 minutes and does not count.
+  search is served from cache for 10 minutes and does not count. The counter and
+  the cache both live in process memory, so the cap is per instance, not per
+  deployment: a restart clears the count, and on serverless the real ceiling is
+  60 multiplied by however many instances happen to be warm. Good enough to stop
+  ordinary runaway usage, not a guarantee against a determined caller. Making it
+  one shared number means moving both to a shared store such as Vercel KV.
 - **Level is inferred** from keywords in the title, not an API field, so it is
   a guess and labelled as one.
 - **24 results per search**, no pagination.

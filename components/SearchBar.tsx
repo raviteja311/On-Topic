@@ -85,7 +85,8 @@ export default function SearchBar({ initialQuery, keep, autoFocus }: Props) {
             placeholder="Python machine learning"
             autoComplete="off"
             enterKeyHint="search"
-            // eslint-disable-next-line jsx-a11y/no-autofocus
+            // Only on the landing view, where the field is the entire point of
+            // the page and there is nothing above it to skip past.
             autoFocus={autoFocus}
           />
           <span className="search-hint mono" aria-hidden="true">
