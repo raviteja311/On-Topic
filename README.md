@@ -46,6 +46,11 @@ so a referrer-restricted key is rejected.
 | `npm start` | Serve the production build |
 | `npm run lint` | Lint |
 | `npm run typecheck` | Type check |
+| `npm test` | Unit tests |
+
+Tests run on Node's built-in runner, with no test framework to install. They are
+TypeScript, executed directly through Node's type stripping, which needs Node
+22.18 or newer. The app itself runs on 20.9.
 
 ## Deploying
 
