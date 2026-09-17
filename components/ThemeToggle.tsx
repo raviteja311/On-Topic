@@ -1,32 +1,47 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 type Mode = "light" | "dark";
 
 /**
  * Theme is applied by a blocking script in the document head before first
- * paint, so this component only has to keep the button label in sync and
- * write the user's choice back. Without that script you get a flash of the
- * wrong theme on every navigation.
+ * paint, so the data-theme attribute is already correct by the time this runs.
+ * That attribute is the source of truth and this component subscribes to it,
+ * rather than keeping a second copy in React state that has to be corrected
+ * after mount. Without the head script you get a flash of the wrong theme.
  */
-export default function ThemeToggle() {
-  const [mode, setMode] = useState<Mode>("light");
 
-  useEffect(() => {
-    const attr = document.documentElement.dataset.theme;
-    setMode(attr === "dark" ? "dark" : "light");
-  }, []);
+function subscribe(onChange: () => void): () => void {
+  const observer = new MutationObserver(onChange);
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-theme"],
+  });
+  return () => observer.disconnect();
+}
+
+function getSnapshot(): Mode {
+  return document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+}
+
+/** The server cannot know the preference, and the head script has not run yet. */
+function getServerSnapshot(): Mode {
+  return "light";
+}
+
+export default function ThemeToggle() {
+  const mode = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   function toggle() {
     const next: Mode = mode === "dark" ? "light" : "dark";
+    // The observer above turns this into a re-render.
     document.documentElement.dataset.theme = next;
     try {
       localStorage.setItem("ontopic:theme", next);
     } catch {
       // Private browsing can refuse storage. The toggle still works for the session.
     }
-    setMode(next);
   }
 
   return (

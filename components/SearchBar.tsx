@@ -12,14 +12,17 @@ interface Props {
 
 export default function SearchBar({ initialQuery, keep, autoFocus }: Props) {
   const [value, setValue] = useState(initialQuery);
+  const [syncedQuery, setSyncedQuery] = useState(initialQuery);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  // Keep the field in step when navigation changes the topic, for example
-  // when a recent topic chip is used.
-  useEffect(() => {
+  // Keep the field in step when navigation changes the topic, for example when
+  // a recent topic chip is used. Adjusting during render rather than from an
+  // effect means the input never paints with the previous topic first.
+  if (initialQuery !== syncedQuery) {
+    setSyncedQuery(initialQuery);
     setValue(initialQuery);
-  }, [initialQuery]);
+  }
 
   // "/" focuses the field from anywhere, the way a search-first tool should.
   useEffect(() => {
