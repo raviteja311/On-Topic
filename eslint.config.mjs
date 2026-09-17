@@ -1,21 +1,17 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
-
-const compat = new FlatCompat({
-  baseDirectory: dirname(fileURLToPath(import.meta.url)),
-});
+import coreWebVitals from "eslint-config-next/core-web-vitals";
+import typescript from "eslint-config-next/typescript";
 
 /**
- * `next lint` is deprecated as of Next 15.5, so the script calls the ESLint CLI
- * directly. Next's shareable config is still classic-style, which is what
- * FlatCompat is bridging here.
+ * Next 16 removed the `next lint` command, so the script calls the ESLint CLI
+ * directly. Its shareable configs are native flat config as of 16, so they are
+ * spread in as-is rather than bridged through FlatCompat.
  */
 const config = [
   {
     ignores: [".next/**", "node_modules/**", "next-env.d.ts"],
   },
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  ...coreWebVitals,
+  ...typescript,
   {
     rules: {
       // The rule is about the Pages Router, where a font link outside
