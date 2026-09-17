@@ -11,6 +11,9 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
+    // Test files import with an explicit .ts extension, which is what the Node
+    // runner needs to resolve them. Allowed here because nothing is emitted.
+    "allowImportingTsExtensions": true,
     "jsx": "react-jsx",
     "incremental": true,
     "plugins": [{ "name": "next" }],
