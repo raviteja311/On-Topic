@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# A new push to the same branch makes the previous run irrelevant.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Lint, types, tests, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run lint
+
+      - run: npm run typecheck
+
+      - run: npm test
+
+      # No secrets needed. Search runs at request time, so nothing here calls
+      # the YouTube API, and without a key the app builds against fixtures.
+      - run: npm run build
+
+  minimum-node:
+    name: Build on the oldest supported Node
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # package.json claims 20.9 as the floor, so prove the app still builds
+      # there rather than taking the field on trust. The tests are skipped:
+      # they are TypeScript run through type stripping, which needs 22.18.
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "20.9"
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+
+  audit:
+    name: Dependency advisories
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci
+
+      # Runtime dependencies only, and only advisories serious enough to act
+      # on. This project shipped with a critical RCE sitting in the tree for
+      # months, which is exactly what this job is here to catch next time.
+      - run: npm audit --omit=dev --audit-level=high

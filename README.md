@@ -1,9 +1,11 @@
 # Ontopic
 
+[![CI](https://github.com/raviteja311/On-Topic/actions/workflows/ci.yml/badge.svg)](https://github.com/raviteja311/On-Topic/actions/workflows/ci.yml)
+
 Enter a topic, get videos on that topic. No feed, no recommendations, no
 comments, nothing queued up next.
 
-Next.js 15 App Router, React 19, TypeScript.
+Next.js 16 App Router, React 19, TypeScript.
 
 ## Quick start
 
