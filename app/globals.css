@@ -52,6 +52,49 @@
 }
 
 /* ==========================================================================
+   Scales
+
+   Spacing, type and motion, shared by both themes because none of them change
+   with it. These are the whole vocabulary: if a value is not here, round to
+   the nearest step rather than adding another token, or the scale stops being
+   one. Raw lengths survive in three places only, each commented where it sits:
+   optical nudges under 4px, the search input's right padding, which has to
+   clear the "/" badge, and fixed control sizes in px.
+
+   Roots at 16px. The 15px on body is a text size, not a layout unit.
+   ========================================================================== */
+
+:root {
+  --space-1: 0.25rem; /*  4px */
+  --space-2: 0.5rem; /*   8px */
+  --space-3: 0.75rem; /* 12px */
+  --space-4: 1rem; /*    16px */
+  --space-5: 1.5rem; /*  24px */
+  --space-6: 2rem; /*    32px */
+  --space-7: 3rem; /*    48px */
+  --space-8: 4rem; /*    64px */
+  --space-9: 5rem; /*    80px */
+
+  --text-2xs: 0.6875rem; /* uppercase micro-labels */
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-md: 0.875rem; /*   secondary body copy */
+  --text-lg: 0.9375rem; /*  card and section titles */
+  --text-xl: 1.0625rem;
+  --text-2xl: 1.25rem;
+
+  /* Fluid display sizes. Separate from the steps above because they are
+     ranges rather than values, and each is used once. */
+  --text-display: clamp(2rem, 6vw, 3.25rem);
+  --text-h1: clamp(1.75rem, 4.5vw, 2.375rem);
+  --text-h2: clamp(1.125rem, 2.6vw, 1.4375rem);
+  --text-lead: clamp(0.9375rem, 1.6vw, 1.0625rem);
+
+  --dur: 150ms;
+  --ease: cubic-bezier(0.2, 0, 0.2, 1);
+}
+
+/* ==========================================================================
    Base
    ========================================================================== */
 
@@ -137,7 +180,7 @@ button {
   color: var(--text);
   border: 1px solid var(--line-strong);
   border-radius: var(--radius-sm);
-  padding: 0.6rem 0.9rem;
+  padding: var(--space-2) var(--space-4);
   box-shadow: var(--shadow-md);
 }
 
@@ -150,7 +193,7 @@ button {
   width: 100%;
   max-width: 1180px;
   margin: 0 auto;
-  padding: 0 clamp(1rem, 4vw, 2rem);
+  padding: 0 clamp(var(--space-4), 4vw, var(--space-6));
 }
 
 /* ==========================================================================
@@ -168,16 +211,16 @@ button {
 .header-in {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--space-4);
   height: var(--header-h);
 }
 
 .wordmark {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-2);
   font-weight: 600;
-  font-size: 1.0625rem;
+  font-size: var(--text-xl);
   letter-spacing: -0.02em;
   flex: none;
 }
@@ -205,7 +248,7 @@ button {
   border-radius: var(--radius-sm);
   color: var(--text-2);
   cursor: pointer;
-  transition: color 0.15s ease, border-color 0.15s ease;
+  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
 
 .icon-button:hover {
@@ -223,27 +266,27 @@ button {
    ========================================================================== */
 
 .intro {
-  padding-top: clamp(2.5rem, 7vw, 4.5rem);
-  padding-bottom: 0.5rem;
+  padding-top: clamp(var(--space-7), 7vw, var(--space-9));
+  padding-bottom: var(--space-2);
   max-width: 34rem;
 }
 
 .intro h1 {
-  font-size: clamp(1.75rem, 4.5vw, 2.375rem);
+  font-size: var(--text-h1);
 }
 
 .intro p {
-  margin-top: 0.75rem;
+  margin-top: var(--space-3);
   color: var(--text-2);
 }
 
 .search {
-  margin-top: clamp(1.5rem, 4vw, 2rem);
+  margin-top: clamp(var(--space-5), 4vw, var(--space-6));
 }
 
 .search-row {
   display: flex;
-  gap: 0.5rem;
+  gap: var(--space-2);
   max-width: 40rem;
 }
 
@@ -256,7 +299,9 @@ button {
 .search-input {
   width: 100%;
   height: 46px;
-  padding: 0 0.9rem 0 2.5rem;
+  /* Left side is derived, not picked: icon offset, icon width, one step of
+     clearance. Rounding it to a step alone left the text adrift from the icon. */
+  padding: 0 var(--space-4) 0 calc(var(--space-3) + 16px + var(--space-2));
   background: var(--surface);
   color: var(--text);
   border: 1px solid var(--control);
@@ -277,7 +322,7 @@ button {
 
 .search-icon {
   position: absolute;
-  left: 0.8rem;
+  left: var(--space-3);
   top: 50%;
   transform: translateY(-50%);
   width: 16px;
@@ -295,10 +340,10 @@ button {
   top: 50%;
   transform: translateY(-50%);
   color: var(--text-3);
-  font-size: 0.6875rem;
+  font-size: var(--text-2xs);
   border: 1px solid var(--line);
   border-radius: 4px;
-  padding: 0.05rem 0.3rem;
+  padding: 0.05rem var(--space-1);
   pointer-events: none;
 }
 
@@ -315,14 +360,14 @@ button {
 .button {
   flex: none;
   height: 46px;
-  padding: 0 1.15rem;
+  padding: 0 var(--space-4);
   background: var(--accent);
   color: var(--on-accent);
   border: 1px solid var(--accent);
   border-radius: var(--radius);
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.15s ease;
+  transition: background-color var(--dur) var(--ease);
 }
 
 .button:hover {
@@ -347,16 +392,16 @@ button {
    ========================================================================== */
 
 .recent {
-  margin-top: 1rem;
+  margin-top: var(--space-4);
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.4rem 0.5rem;
+  gap: var(--space-2) var(--space-2);
   max-width: 44rem;
 }
 
 .recent-label {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   color: var(--text-3);
   margin-right: 0.15rem;
 }
@@ -364,16 +409,16 @@ button {
 .chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: var(--space-2);
   height: 27px;
-  padding: 0 0.55rem;
+  padding: 0 var(--space-2);
   background: transparent;
   border: 1px solid var(--control);
   border-radius: 999px;
   color: var(--text-2);
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   cursor: pointer;
-  transition: color 0.15s ease, border-color 0.15s ease;
+  transition: color var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
 
 .chip:hover {
@@ -394,20 +439,20 @@ button {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
-  gap: 0.75rem 1.25rem;
-  padding: 1.25rem 0;
+  gap: var(--space-3) var(--space-5);
+  padding: var(--space-5) 0;
   border-bottom: 1px solid var(--line);
-  margin-top: clamp(1.75rem, 4vw, 2.5rem);
+  margin-top: clamp(var(--space-6), 4vw, var(--space-7));
 }
 
 .filter {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: var(--space-1);
 }
 
 .filter-label {
-  font-size: 0.6875rem;
+  font-size: var(--text-2xs);
   letter-spacing: 0.07em;
   text-transform: uppercase;
   color: var(--text-3);
@@ -423,15 +468,15 @@ button {
 }
 
 .segmented button {
-  padding: 0.28rem 0.6rem;
+  padding: var(--space-1) var(--space-2);
   background: transparent;
   border: 0;
   border-radius: 5px;
   color: var(--text-2);
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   cursor: pointer;
   white-space: nowrap;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
 }
 
 .segmented button:hover {
@@ -448,7 +493,7 @@ button {
 .filters-meta {
   margin-left: auto;
   align-self: center;
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   color: var(--text-3);
 }
 
@@ -458,14 +503,14 @@ button {
 
 .notice {
   display: flex;
-  gap: 0.7rem;
+  gap: var(--space-3);
   align-items: flex-start;
-  margin-top: 1.25rem;
-  padding: 0.7rem 0.9rem;
+  margin-top: var(--space-5);
+  padding: var(--space-3) var(--space-4);
   background: var(--accent-wash);
   border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
   border-radius: var(--radius-sm);
-  font-size: 0.875rem;
+  font-size: var(--text-md);
   color: var(--text);
 }
 
@@ -492,8 +537,8 @@ button {
 
 .grid {
   display: grid;
-  gap: 1.5rem 1.25rem;
-  padding: 1.75rem 0 4rem;
+  gap: var(--space-5) var(--space-5);
+  padding: var(--space-6) 0 var(--space-8);
   grid-template-columns: 1fr;
 }
 
@@ -542,20 +587,20 @@ button {
   position: absolute;
   right: 6px;
   bottom: 6px;
-  padding: 0.05rem 0.3rem;
+  padding: 0.05rem var(--space-1);
   background: rgba(10, 12, 15, 0.82);
   color: #f4f6f8;
   border-radius: 4px;
-  font-size: 0.6875rem;
+  font-size: var(--text-2xs);
   letter-spacing: 0.01em;
 }
 
 .card-body {
-  padding-top: 0.7rem;
+  padding-top: var(--space-3);
 }
 
 .card-title {
-  font-size: 0.9375rem;
+  font-size: var(--text-lg);
   font-weight: 500;
   line-height: 1.4;
   display: -webkit-box;
@@ -569,8 +614,8 @@ button {
 }
 
 .card-meta {
-  margin-top: 0.3rem;
-  font-size: 0.8125rem;
+  margin-top: var(--space-1);
+  font-size: var(--text-sm);
   color: var(--text-2);
 }
 
@@ -578,16 +623,16 @@ button {
   margin-top: 0.15rem;
   display: flex;
   align-items: center;
-  gap: 0.45rem;
-  font-size: 0.75rem;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
   color: var(--text-3);
 }
 
 .level-tag {
   border: 1px solid var(--line);
   border-radius: 4px;
-  padding: 0 0.28rem;
-  font-size: 0.6875rem;
+  padding: 0 var(--space-1);
+  font-size: var(--text-2xs);
   color: var(--text-3);
   cursor: help;
 }
@@ -607,30 +652,30 @@ button {
   height: 11px;
   background: var(--sunk);
   border-radius: 3px;
-  margin-top: 0.6rem;
+  margin-top: var(--space-2);
 }
 
 .state {
-  padding: clamp(3rem, 9vw, 5.5rem) 0;
+  padding: clamp(var(--space-7), 9vw, var(--space-9)) 0;
   max-width: 34rem;
 }
 
 .state h2 {
-  font-size: 1.25rem;
+  font-size: var(--text-2xl);
 }
 
 .state p {
-  margin-top: 0.6rem;
+  margin-top: var(--space-2);
   color: var(--text-2);
 }
 
 .state ul {
-  margin-top: 0.9rem;
+  margin-top: var(--space-4);
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: var(--space-2);
   color: var(--text-2);
-  font-size: 0.9375rem;
+  font-size: var(--text-lg);
 }
 
 .state li::before {
@@ -641,13 +686,13 @@ button {
   border-radius: 50%;
   background: var(--line-strong);
   vertical-align: 0.25em;
-  margin-right: 0.6rem;
+  margin-right: var(--space-2);
 }
 
 .state-actions {
-  margin-top: 1.25rem;
+  margin-top: var(--space-5);
   display: flex;
-  gap: 0.5rem;
+  gap: var(--space-2);
   flex-wrap: wrap;
 }
 
@@ -656,7 +701,7 @@ button {
    ========================================================================== */
 
 .watch {
-  padding: 1.5rem 0 4rem;
+  padding: var(--space-5) 0 var(--space-8);
   max-width: 900px;
   margin: 0 auto;
 }
@@ -664,8 +709,8 @@ button {
 .watch-back {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  font-size: 0.875rem;
+  gap: var(--space-2);
+  font-size: var(--text-md);
   color: var(--text-2);
 }
 
@@ -679,7 +724,7 @@ button {
 }
 
 .player {
-  margin-top: 1rem;
+  margin-top: var(--space-4);
   position: relative;
   aspect-ratio: 16 / 9;
   background: #0a0c0f;
@@ -701,39 +746,39 @@ button {
   inset: 0;
   display: grid;
   place-content: center;
-  gap: 0.5rem;
-  padding: 2rem;
+  gap: var(--space-2);
+  padding: var(--space-6);
   text-align: center;
   color: #c9ced6;
 }
 
 .watch-head {
-  margin-top: 1.25rem;
+  margin-top: var(--space-5);
   display: flex;
   align-items: flex-start;
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
 .watch-title {
-  font-size: clamp(1.125rem, 2.6vw, 1.4375rem);
+  font-size: var(--text-h2);
   flex: 1 1 auto;
 }
 
 .watch-meta {
-  margin-top: 0.5rem;
+  margin-top: var(--space-2);
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.45rem;
-  font-size: 0.875rem;
+  gap: var(--space-2);
+  font-size: var(--text-md);
   color: var(--text-2);
 }
 
 .watch-note {
-  margin-top: 2rem;
-  padding-top: 1.25rem;
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
   border-top: 1px solid var(--line);
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
   color: var(--text-3);
   max-width: 46rem;
 }
@@ -754,14 +799,14 @@ button {
 }
 
 .focus-on .watch {
-  padding-top: 1rem;
+  padding-top: var(--space-4);
   max-width: 1180px;
 }
 
 .focus-bar {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-2);
   flex: none;
 }
 
@@ -771,13 +816,13 @@ button {
 
 .footer {
   border-top: 1px solid var(--line);
-  padding: 1.5rem 0 2.5rem;
-  font-size: 0.8125rem;
+  padding: var(--space-5) 0 var(--space-7);
+  font-size: var(--text-sm);
   color: var(--text-3);
 }
 
 .footer p + p {
-  margin-top: 0.4rem;
+  margin-top: var(--space-2);
 }
 
 /* ==========================================================================
@@ -787,13 +832,18 @@ button {
    aligned header so results are not pushed down the page.
    ========================================================================== */
 
+/* The results variant. .intro supplied the top padding on the landing view,
+   and it is not rendered here, so the search row needs its own. */
 .head {
   position: relative;
+  padding-top: var(--space-6);
 }
 
 .head-hero {
   text-align: center;
-  padding-bottom: 0.5rem;
+  /* .intro brings its own generous top padding on this view. */
+  padding-top: 0;
+  padding-bottom: var(--space-2);
 }
 
 /* A very soft accent wash behind the hero. Sits under the content and is
@@ -815,17 +865,17 @@ button {
 .head-hero .intro {
   max-width: 40rem;
   margin: 0 auto;
-  padding-top: clamp(2.75rem, 8vw, 5rem);
+  padding-top: clamp(var(--space-7), 8vw, var(--space-9));
 }
 
 .head-hero .intro h1 {
-  font-size: clamp(2rem, 6vw, 3.25rem);
+  font-size: var(--text-display);
   letter-spacing: -0.03em;
 }
 
 .head-hero .intro p {
-  margin-top: 0.9rem;
-  font-size: clamp(0.9375rem, 1.6vw, 1.0625rem);
+  margin-top: var(--space-4);
+  font-size: var(--text-lead);
   max-width: 32rem;
   margin-left: auto;
   margin-right: auto;
@@ -851,16 +901,16 @@ button {
 .eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: var(--space-2);
   height: 26px;
-  padding: 0 0.7rem 0 0.55rem;
-  margin-bottom: 1.1rem;
+  padding: 0 var(--space-3) 0 var(--space-2);
+  margin-bottom: var(--space-4);
   border: 1px solid var(--line);
   border-radius: 999px;
   background: var(--surface);
   box-shadow: var(--shadow-sm);
   color: var(--text-2);
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.01em;
 }
 
@@ -876,16 +926,16 @@ button {
    ========================================================================== */
 
 .suggest {
-  margin-top: 1.1rem;
+  margin-top: var(--space-4);
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.4rem 0.5rem;
+  gap: var(--space-2) var(--space-2);
   max-width: 44rem;
 }
 
 .suggest-label {
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   color: var(--text-3);
   margin-right: 0.15rem;
 }
@@ -895,29 +945,29 @@ button {
    ========================================================================== */
 
 .pitch {
-  padding: clamp(2.5rem, 7vw, 4rem) 0 clamp(2rem, 5vw, 3rem);
+  padding: clamp(var(--space-7), 7vw, var(--space-8)) 0 clamp(var(--space-6), 5vw, var(--space-7));
 }
 
 .pitch-grid {
   display: grid;
-  gap: 0.75rem;
+  gap: var(--space-3);
   grid-template-columns: 1fr;
 }
 
 @media (min-width: 700px) {
   .pitch-grid {
     grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
+    gap: var(--space-4);
   }
 }
 
 .pitch-card {
-  padding: 1.25rem 1.25rem 1.35rem;
+  padding: var(--space-5) var(--space-5) var(--space-5);
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
-  transition: box-shadow 140ms ease, border-color 140ms ease;
+  transition: box-shadow var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
 
 .pitch-card:hover {
@@ -931,7 +981,7 @@ button {
   justify-content: center;
   width: 34px;
   height: 34px;
-  margin-bottom: 0.85rem;
+  margin-bottom: var(--space-3);
   border-radius: var(--radius-sm);
   background: var(--accent-wash);
   color: var(--accent);
@@ -943,27 +993,27 @@ button {
 }
 
 .pitch-card h2 {
-  font-size: 0.9375rem;
+  font-size: var(--text-lg);
 }
 
 .pitch-card p {
-  margin-top: 0.4rem;
+  margin-top: var(--space-2);
   color: var(--text-2);
-  font-size: 0.875rem;
+  font-size: var(--text-md);
   line-height: 1.55;
 }
 
 .pitch-foot {
-  margin-top: clamp(1.5rem, 4vw, 2rem);
+  margin-top: clamp(var(--space-5), 4vw, var(--space-6));
   text-align: center;
   color: var(--text-3);
-  font-size: 0.8125rem;
+  font-size: var(--text-sm);
 }
 
 .kbd {
   display: inline-block;
   min-width: 20px;
-  padding: 0.1rem 0.35rem;
+  padding: 0.1rem var(--space-2);
   /* --control, not --line-strong: this reads as a key cap only if the edge is
      actually visible, and --control is the token that clears 3:1 on --sunk. */
   border: 1px solid var(--control);
@@ -971,7 +1021,7 @@ button {
   border-radius: 5px;
   background: var(--sunk);
   color: var(--text-2);
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   line-height: 1.4;
   text-align: center;
 }

@@ -59,19 +59,25 @@ export default async function Home({
           block collapses to a compact left aligned header, so results start
           near the top of the page instead of below a marketing panel. */}
       <div className={hasTopic ? "shell head" : "shell head head-hero"}>
-        <div className="intro">
-          {hasTopic ? null : (
+        {/* The pitch is for someone who has not searched yet. Once there is a
+            topic they have already answered the question, so it comes out and
+            the results move up the page. The heading stays for structure, but
+            describes what is actually on screen. */}
+        {hasTopic ? (
+          <h1 className="visually-hidden">Videos about {query.q}</h1>
+        ) : (
+          <div className="intro">
             <span className="eyebrow">
               <span className="eyebrow-dot" aria-hidden="true" />
               Search first, no feed
             </span>
-          )}
-          <h1>What do you want to learn?</h1>
-          <p>
-            One topic in, only videos on that topic out. No feed, no
-            recommendations, no comments, nothing queued up next.
-          </p>
-        </div>
+            <h1>What do you want to learn?</h1>
+            <p>
+              One topic in, only videos on that topic out. No feed, no
+              recommendations, no comments, nothing queued up next.
+            </p>
+          </div>
+        )}
 
         <SearchBar
           initialQuery={query.q}
