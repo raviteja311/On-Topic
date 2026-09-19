@@ -35,7 +35,9 @@
   --sunk: #13161a;
   --line: #262b32;
   --line-strong: #38404a;
-  --control: #5b6572;
+  /* Lifted from #5b6572, which sat at 2.95:1 on --surface and so missed the
+     3:1 WCAG wants for a control boundary. Worst case is now 3.37:1. */
+  --control: #636e7c;
   --text: #e9ecf0;
   --text-2: #a7aeb8;
   --text-3: #949ca6;
@@ -483,17 +485,22 @@ button {
   color: var(--text);
 }
 
+/* The active option carries the accent rather than being a slightly lighter
+   chip among identical chips. It is the one thing on this bar worth finding at
+   a glance: it says what the current search is actually filtered to. The
+   shadow goes with it, since the colour already separates it. */
 .segmented button[aria-pressed="true"] {
-  background: var(--surface);
-  color: var(--text);
-  box-shadow: var(--shadow-sm);
+  background: var(--accent-wash);
+  color: var(--accent);
   font-weight: 500;
 }
 
+/* Secondary to the controls it sits beside, so it reads at the size of the
+   labels rather than the size of the options. */
 .filters-meta {
   margin-left: auto;
   align-self: center;
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
   color: var(--text-3);
 }
 
@@ -628,10 +635,12 @@ button {
   color: var(--text-3);
 }
 
+/* Filled rather than outlined. An outlined pill sitting next to a date reads
+   as something you can press, and this is a label, not a control. */
 .level-tag {
-  border: 1px solid var(--line);
+  background: var(--sunk);
   border-radius: 4px;
-  padding: 0 var(--space-1);
+  padding: 1px var(--space-1);
   font-size: var(--text-2xs);
   color: var(--text-3);
   cursor: help;
