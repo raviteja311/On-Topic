@@ -37,7 +37,14 @@ export function SkeletonGrid() {
   return (
     <ul className="grid" aria-hidden="true">
       {Array.from({ length: 8 }).map((_, i) => (
-        <li key={i}>
+        // --i staggers the pulse so the grid resolves as a sweep. Announcing
+        // the wait is the live region's job in Filters, which is why this
+        // whole block stays hidden from assistive tech.
+        <li
+          key={i}
+          className="skeleton-item"
+          style={{ "--i": i } as React.CSSProperties}
+        >
           <div className="skeleton-thumb" />
           <div className="skeleton-line" style={{ width: "92%" }} />
           <div className="skeleton-line" style={{ width: "58%" }} />

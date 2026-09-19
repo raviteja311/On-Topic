@@ -96,7 +96,7 @@ export default async function Home({
             key={`${query.q}|${query.sort}|${query.length}`}
             fallback={
               <>
-                <Filters query={query} count={null} />
+                <Filters query={query} count={null} loading />
                 <SkeletonGrid />
               </>
             }

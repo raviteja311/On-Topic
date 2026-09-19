@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
 interface Props {
@@ -15,6 +15,9 @@ export default function SearchBar({ initialQuery, keep, autoFocus }: Props) {
   const [syncedQuery, setSyncedQuery] = useState(initialQuery);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+  // Navigating is what runs the search, so the transition's pending flag is
+  // the search's pending flag. It clears when the server sends the new page.
+  const [isSearching, startSearch] = useTransition();
 
   // Keep the field in step when navigation changes the topic, for example when
   // a recent topic chip is used. Adjusting during render rather than from an
@@ -55,7 +58,9 @@ export default function SearchBar({ initialQuery, keep, autoFocus }: Props) {
       if (k === "sort" && v !== "relevance") params.set(k, v);
       if (k !== "sort" && v !== "any") params.set(k, v);
     }
-    router.push(`/?${params.toString()}`);
+    startSearch(() => {
+      router.push(`/?${params.toString()}`);
+    });
   }
 
   return (
@@ -96,7 +101,13 @@ export default function SearchBar({ initialQuery, keep, autoFocus }: Props) {
             /
           </span>
         </div>
-        <button className="button" type="submit">
+        <button
+          className="button"
+          type="submit"
+          data-pending={isSearching ? "true" : undefined}
+          aria-busy={isSearching}
+          disabled={isSearching}
+        >
           Search
         </button>
       </div>

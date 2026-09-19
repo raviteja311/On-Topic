@@ -7,6 +7,12 @@ interface Props {
   query: Query;
   /** Result count after filtering, announced politely for screen readers. */
   count: number | null;
+  /**
+   * Set while the search is in flight. The skeleton grid is hidden from
+   * assistive tech, so without this the wait is silent and the count simply
+   * changes later with nothing to say a search was running.
+   */
+  loading?: boolean;
 }
 
 const SORTS = [
@@ -28,7 +34,7 @@ const LEVELS = [
   { key: "advanced", label: "Advanced" },
 ] as const;
 
-export default function Filters({ query, count }: Props) {
+export default function Filters({ query, count, loading }: Props) {
   const router = useRouter();
 
   function set(name: keyof Query, value: string) {
@@ -69,8 +75,17 @@ export default function Filters({ query, count }: Props) {
         onPick={(v) => set("level", v)}
         hint="Inferred from the words in each title and description, not a field YouTube provides."
       />
-      <p className="filters-meta" role="status" aria-live="polite">
-        {count === null ? "" : `${count} ${count === 1 ? "video" : "videos"}`}
+      <p
+        className="filters-meta"
+        role="status"
+        aria-live="polite"
+        aria-busy={loading}
+      >
+        {loading
+          ? "Searching"
+          : count === null
+            ? ""
+            : `${count} ${count === 1 ? "video" : "videos"}`}
       </p>
     </div>
   );

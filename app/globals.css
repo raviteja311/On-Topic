@@ -310,6 +310,7 @@ button {
   border-radius: var(--radius);
   font: inherit;
   box-shadow: var(--shadow-sm);
+  caret-color: var(--accent);
 }
 
 .search-input::placeholder {
@@ -375,6 +376,35 @@ button {
 .button:hover {
   background: var(--accent-hover);
   border-color: var(--accent-hover);
+}
+
+/* The label goes transparent rather than being swapped for shorter text, so
+   the button cannot change width at the moment it becomes unclickable. The
+   text stays in the DOM, so a screen reader still finds "Search", and
+   aria-busy on the element carries the state. */
+.button[data-pending="true"] {
+  position: relative;
+  color: transparent;
+  cursor: progress;
+}
+
+.button[data-pending="true"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 16px;
+  height: 16px;
+  border: 2px solid color-mix(in srgb, var(--on-accent) 35%, transparent);
+  border-top-color: var(--on-accent);
+  border-radius: 50%;
+  animation: spin 600ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .button-quiet {
@@ -595,11 +625,21 @@ button {
   right: 6px;
   bottom: 6px;
   padding: 0.05rem var(--space-1);
-  background: rgba(10, 12, 15, 0.82);
+  /* Blurring what is behind it means the plate can be thinner and still hold
+     the text on a bright thumbnail. Opacity stays high enough that the
+     unsupported path below is a small change rather than a different look. */
+  background: rgba(10, 12, 15, 0.68);
+  backdrop-filter: blur(8px);
   color: #f4f6f8;
   border-radius: 4px;
   font-size: var(--text-2xs);
   letter-spacing: 0.01em;
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  .card-duration {
+    background: rgba(10, 12, 15, 0.82);
+  }
 }
 
 .card-body {
@@ -649,6 +689,21 @@ button {
 /* ==========================================================================
    Skeletons, empty and error states
    ========================================================================== */
+
+@keyframes skeleton-pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Each card starts a beat after the one before it, so the grid reads as a
+   sweep across the page rather than eight boxes blinking in unison. The
+   reduced-motion rule at the end of this file stops it dead, which is fine:
+   the shapes still say the same thing standing still. */
+.skeleton-item {
+  animation: skeleton-pulse 1.4s var(--ease) infinite;
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
 
 .skeleton-thumb {
   aspect-ratio: 16 / 9;
