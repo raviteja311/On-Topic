@@ -1,11 +1,13 @@
 # Ontopic
 
-[![CI](https://github.com/raviteja311/On-Topic/actions/workflows/ci.yml/badge.svg)](https://github.com/raviteja311/On-Topic/actions/workflows/ci.yml)
+[![CI](https://github.com/raviteja311/On-Topic/actions/workflows/ci.yml/badge.svg)](https://github.com/raviteja311/On-Topic/actions/workflows/ci.yml) [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 
 Enter a topic, get videos on that topic. No feed, no recommendations, no
 comments, nothing queued up next.
 
 Next.js 16 App Router, React 19, TypeScript.
+
+**Live:** [on-topic-two.vercel.app](https://on-topic-two.vercel.app)
 
 ## Quick start
 
@@ -69,14 +71,14 @@ export will not work.
 - **Searches are links.** The topic and all filters live in the URL, so any
   search can be bookmarked or shared.
 - **Search runs on the server.** The API key never reaches the browser.
-- **Capped at 60 searches a day**, resetting at midnight Pacific. Repeating a
+- **Capped at 60 searches a day** by default (`SEARCH_DAILY_LIMIT`), resetting at midnight Pacific. Repeating a
   search is served from cache for 10 minutes and does not count. The counter and
   the cache both live in process memory, so the cap is per instance, not per
   deployment: a restart clears the count, and on serverless the real ceiling is
   60 multiplied by however many instances happen to be warm. Good enough to stop
   ordinary runaway usage, not a guarantee against a determined caller. Making it
   one shared number means moving both to a shared store such as Vercel KV.
-- **Each visitor gets 15 of those searches.** Without a per-visitor share the
+- **Each visitor gets 15 of those searches** by default (`SEARCH_VISITOR_LIMIT`). Without a per-visitor share the
   daily cap is first come first served, so one person refreshing could spend the
   day and everyone arriving after them would get the refusal. A visitor is
   whoever the platform's proxy reports, so this is a fairness mechanism rather
@@ -95,3 +97,11 @@ export will not work.
 
 The player is YouTube's official embed, so YouTube's own ads and end-screen
 suggestions remain. Ontopic is not affiliated with YouTube or Google.
+
+## License
+
+Apache 2.0, see [LICENSE](LICENSE).
+
+## Author
+
+**Jetti Raviteja** · [Portfolio](https://portfolio-website-drab-six-15.vercel.app) · [GitHub](https://github.com/raviteja311) · [LinkedIn](https://www.linkedin.com/in/jettiraviteja/)
